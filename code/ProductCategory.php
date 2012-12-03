@@ -182,13 +182,13 @@ class ProductCategory_Extension extends DataExtension {
   public function onBeforeWrite() {
 
     //If the ParentID is set to a ProductCategory, select that category for this Product
-    $parent = $this->owner->getParent();
-    if ($parent && $parent instanceof ProductCategory) {
-      $productCategories = $this->owner->ProductCategories();
-      if (!in_array($parent->ID, array_keys($productCategories->map()->toArray()))) {
-        $productCategories->add($parent);
-      }
-    }
+    // $parent = $this->owner->getParent();
+    // if ($parent && $parent instanceof ProductCategory) {
+    //   $productCategories = $this->owner->ProductCategories();
+    //   if (!in_array($parent->ID, array_keys($productCategories->map()->toArray()))) {
+    //     $productCategories->add($parent);
+    //   }
+    // }
   }
 
   public function updateCMSFields(FieldList $fields) {
