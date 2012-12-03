@@ -2,11 +2,6 @@
 /**
  * Represents a Product category, Products can be added to many categories and they 
  * can have a ProductCategory as a parent in the site tree. 
- * 
- * @author Frank Mullenger <frankmullenger@gmail.com>
- * @copyright Copyright (c) 2011, Frank Mullenger
- * @package swipestripe
- * @subpackage product
  */
 class ProductCategory extends Page {
 
@@ -83,11 +78,6 @@ class ProductCategory extends Page {
 
 /**
  * Controller to display a ProductCategory and retrieve its Products. 
- * 
- * @author Frank Mullenger <frankmullenger@gmail.com>
- * @copyright Copyright (c) 2011, Frank Mullenger
- * @package swipestripe
- * @subpackage product
  */
 class ProductCategory_Controller extends Page_Controller {
   
@@ -237,11 +227,6 @@ class ProductCategory_Extension extends DataExtension {
 /**
  * Search filter for {@link Product} categories, filtering search results for 
  * certain {@link ProductCategory}s in the CMS.
- * 
- * @author Frank Mullenger <frankmullenger@gmail.com>
- * @copyright Copyright (c) 2011, Frank Mullenger
- * @package swipestripe
- * @subpackage search
  */
 class ProductCategory_SearchFilter extends SearchFilter {
 
