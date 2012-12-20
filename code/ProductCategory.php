@@ -171,10 +171,6 @@ class ProductCategory_Extension extends DataExtension {
     )
   );
 
-  public static $summary_fields = array(
-    'SummaryOfCategories' => 'Categories'
-	);
-
 	public static $casting = array(
     'Category' => 'Varchar',
   );
@@ -207,21 +203,21 @@ class ProductCategory_Extension extends DataExtension {
     );
     return $fields;
 	}
+}
 
-  /**
-	 * Summary of product categories for convenience, categories are comma seperated.
-	 * 
-	 * @return String
-	 */
-  public function SummaryOfCategories() {
-	  $summary = array();
-	  $categories = $this->owner->ProductCategories();
-	  
-	  if ($categories) foreach ($categories as $productCategory) {
-	    $summary[] = $productCategory->getBreadcrumbs(' > ');
-	  } 
-	  
-	  return implode(', ', $summary);
+class ProductCategory_CMSExtension extends Extension {
+
+	function updateSearchForm($form) {
+
+		$fields = $form->Fields();
+
+		$cats = ProductCategory::get()->map()->toArray();
+		$fields->push(DropdownField::create('q[Category]', 'Category', $cats)
+			->setHasEmptyDefault(true)
+		);
+		$form->loadDataFrom($this->owner->request->getVars());
+
+		$form->setFields($fields);
 	}
 }
 
@@ -242,6 +238,8 @@ class ProductCategory_SearchFilter extends SearchFilter {
 	  $this->model = $query->applyRelation($this->relation);
 	  $value = $this->getValue();
 
+	  SS_Log::log(new Exception(print_r($value, true)), SS_Log::NOTICE);
+
 	  if ($value) {
 
 	    $query->innerJoin(
@@ -252,7 +250,7 @@ class ProductCategory_SearchFilter extends SearchFilter {
   			'SiteTree_Live',
   			"\"SiteTree_Live\".\"ID\" = \"ProductCategory_Products\".\"ProductCategoryID\""
   		);
-  		$query->where("\"SiteTree_Live\".\"Title\" LIKE '%" . Convert::raw2sql($value) . "%'");
+  		$query->where("\"SiteTree_Live\".\"ID\" LIKE '%" . Convert::raw2sql($value) . "%'");
 	  }
 	  return $query;
 	}
@@ -269,6 +267,9 @@ class ProductCategory_SearchFilter extends SearchFilter {
 	}
 
 	protected function applyOne(DataQuery $query) {
+
+		SS_Log::log(new Exception(print_r($this->getValue(), true)), SS_Log::NOTICE);
+
 		return;
 	}
 
