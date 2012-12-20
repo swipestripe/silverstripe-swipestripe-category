@@ -182,13 +182,14 @@ class ProductCategory_Extension extends DataExtension {
   public function onBeforeWrite() {
 
     //If the ParentID is set to a ProductCategory, select that category for this Product
-    // $parent = $this->owner->getParent();
-    // if ($parent && $parent instanceof ProductCategory) {
-    //   $productCategories = $this->owner->ProductCategories();
-    //   if (!in_array($parent->ID, array_keys($productCategories->map()->toArray()))) {
-    //     $productCategories->add($parent);
-    //   }
-    // }
+    $parent = $this->owner->getParent();
+    if ($parent && $parent instanceof ProductCategory) {
+
+      $productCategories = $this->owner->ProductCategories();
+      if ($this->owner->isInDB() && !in_array($parent->ID, array_keys($productCategories->map()->toArray()))) {
+        $productCategories->add($parent);
+      }
+    }
   }
 
   public function updateCMSFields(FieldList $fields) {
@@ -265,6 +266,14 @@ class ProductCategory_SearchFilter extends SearchFilter {
 	 */
 	public function isEmpty() {
 		return $this->getValue() == null || $this->getValue() == '';
+	}
+
+	protected function applyOne(DataQuery $query) {
+		return;
+	}
+
+	protected function excludeOne(DataQuery $query) {
+		return;
 	}
 }
 
