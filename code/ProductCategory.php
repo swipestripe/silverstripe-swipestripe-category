@@ -94,7 +94,8 @@ class ProductCategory_Controller extends Page_Controller {
    * @see ProductCategory_Controller::Products()
    * @var String Suitable for inserting in ORDER BY clause
    */
-  public static $products_ordered_by = "\"ProductCategory_Products\".\"ProductOrder\" DESC";
+  // public static $products_ordered_by = "\"ProductCategory_Products\".\"ProductOrder\" DESC";
+  public static $products_ordered_by = "\"SiteTree\".\"ParentID\" ASC, \"SiteTree\".\"Sort\" ASC";
   
 	/**
    * Include some CSS.
