@@ -74,6 +74,34 @@ class ProductCategory extends Page {
 		}
 		return parent::isSection();
 	}
+	
+	public function ListboxCrumb($maxDepth = 20, $unlinked = false, $stopAtPageType = false, $showHidden = false) {
+		$page = $this;
+		$pages = array();
+		$crumb = '';
+		
+		while(
+			$page  
+ 			&& (!$maxDepth || count($pages) < $maxDepth) 
+ 			&& (!$stopAtPageType || $page->ClassName != $stopAtPageType)
+ 		) {
+			if($showHidden || $page->ShowInMenus || ($page->ID == $this->ID)) { 
+				$pages[] = $page;
+			}
+			
+			$page = $page->Parent;
+		}
+		
+		$i = 1;
+		foreach ($pages as $page) {
+			
+			$crumb .= $page->getMenuTitle();
+			if ($i++ < count($pages)) {
+				$crumb .= ' > ';
+			}
+		}
+		return $crumb;
+	}
 }
 
 /**
@@ -191,7 +219,7 @@ class ProductCategory_Extension extends DataExtension {
 
   public function updateCMSFields(FieldList $fields) {
 
-  	$categories = ProductCategory::get()->map('ID', 'Breadcrumbs')->toArray();
+  	$categories = ProductCategory::get()->map('ID', 'ListboxCrumb')->toArray();
     arsort($categories);
 
     $fields->addFieldToTab(
@@ -238,8 +266,6 @@ class ProductCategory_SearchFilter extends SearchFilter {
 
 	  $this->model = $query->applyRelation($this->relation);
 	  $value = $this->getValue();
-
-	  SS_Log::log(new Exception(print_r($value, true)), SS_Log::NOTICE);
 
 	  if ($value) {
 
