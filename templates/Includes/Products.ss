@@ -3,14 +3,8 @@
 	<% include Pagination %>
 
 	<div class="product-row">
-		<% control Products %>
+		<% loop Products %>
 			<div class="product-brief">
-			
-				<div class="product-brief-image">
-					<a href="$Link">
-						$FirstImage.CroppedImage(137,145)
-					</a>
-				</div>
 				
 				<h5 class="product-brief-title">
 					<a href="$Link">$Title.XML</a>
@@ -30,7 +24,7 @@
 				<% end_if %>
 			<% end_if %>
 			
-		<% end_control %>
+		<% end_loop %>
 	
 	
 	<% include Pagination %>

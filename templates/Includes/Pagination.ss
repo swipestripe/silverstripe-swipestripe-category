@@ -8,7 +8,7 @@
 				</li>
 			<% end_if %>
 
-			<% control Products.PaginationSummary %>
+			<% loop Products.PaginationSummary %>
 				<% if CurrentBool %>
 					<li class="active"><a href="$Link">$PageNum</a></li>
 				<% else %>
@@ -18,7 +18,7 @@
 						<li class="disabled"><span>...</span></li>
 					<% end_if %>
 				<% end_if %>
-			<% end_control %>
+			<% end_loop %>
 			
 			<% if Products.NotLastPage %>
 				<li>

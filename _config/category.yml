@@ -1,0 +1,7 @@
+---
+name: SwipeStripe Category
+---
+
+Product:
+  extensions: 
+    - 'ProductCategory_Extension'
