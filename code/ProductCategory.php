@@ -5,52 +5,33 @@
  */
 class ProductCategory extends Page {
 
-  public static $singular_name = 'Product Category';
-  public static $plural_name = 'Product Categories';
+	public static $singular_name = 'Product Category';
+	public static $plural_name = 'Product Categories';
 
-  /**
-   * Many many relations for a ProductCategory
-   * 
-   * @var Array
-   */
+	/**
+	 * Many many relations for a ProductCategory
+	 * 
+	 * @var Array
+	 */
 	public static $many_many = array(
-    'Products' => 'Product'
-  );
-  
-  public static $many_many_extraFields = array(
+		'Products' => 'Product'
+	);
+	
+	public static $many_many_extraFields = array(
 		'Products' => array(
 			'ProductOrder' => 'Int'
-    )
-  );
-  
-  /**
-   * Summary fields for viewing categories in the CMS
-   * 
-   * @var Array
-   */
-  public static $summary_fields = array(
-	  'Title' => 'Name',
-    'MenuTitle' => 'Menu Title'
+		)
 	);
-    
+	
 	/**
-	 * Can add products to the category straight from the ProductCategory page
-	 * TODO remove this, its not useful. And change the direction of the many_many relation so that patched version of CTF not needed
+	 * Summary fields for viewing categories in the CMS
 	 * 
-	 * @see Page::getCMSFields()
-	 * @return FieldList
+	 * @var Array
 	 */
-	function getCMSFields() {
-    $fields = parent::getCMSFields();
-
-    if ($warning = ShopConfig::licence_key_warning()) {
-      $fields->addFieldToTab('Root.Main', new LiteralField('SwipeStripeLicenseWarning', 
-        '<p class="message warning">'.$warning.'</p>'
-      ), 'Title');
-    }
-    
-    return $fields;
-	}
+	public static $summary_fields = array(
+		'Title' => 'Name',
+		'MenuTitle' => 'Menu Title'
+	);
 
 	public function isSection() {
 
@@ -82,9 +63,9 @@ class ProductCategory extends Page {
 		
 		while(
 			$page  
- 			&& (!$maxDepth || count($pages) < $maxDepth) 
- 			&& (!$stopAtPageType || $page->ClassName != $stopAtPageType)
- 		) {
+			&& (!$maxDepth || count($pages) < $maxDepth) 
+			&& (!$stopAtPageType || $page->ClassName != $stopAtPageType)
+		) {
 			if($showHidden || $page->ShowInMenus || ($page->ID == $this->ID)) { 
 				$pages[] = $page;
 			}
@@ -108,129 +89,129 @@ class ProductCategory extends Page {
  * Controller to display a ProductCategory and retrieve its Products. 
  */
 class ProductCategory_Controller extends Page_Controller {
-  
-  /**
-   * Set number of products per page displayed in ProductCategory pages
-   * 
-   * @var Int
-   */
-  public static $products_per_page = 12;
-
-  /**
-   * Set how the products are ordered on ProductCategory pages
-   * 
-   * @see ProductCategory_Controller::Products()
-   * @var String Suitable for inserting in ORDER BY clause
-   */
-  // public static $products_ordered_by = "\"ProductCategory_Products\".\"ProductOrder\" DESC";
-  public static $products_ordered_by = "\"SiteTree\".\"ParentID\" ASC, \"SiteTree\".\"Sort\" ASC";
-  
+	
 	/**
-   * Include some CSS.
-   * 
-   * @see Page_Controller::init()
-   */
-  function init() {
-    parent::init();
-    Requirements::css('swipestripe/css/Shop.css');
-  }
+	 * Set number of products per page displayed in ProductCategory pages
+	 * 
+	 * @var Int
+	 */
+	public static $products_per_page = 12;
 
-  /**
-   * Get Products that have this ProductCategory set or have this ProductCategory as a parent in site tree.
-   * Supports pagination.
-   * 
-   * @see Page_Controller::Products()
-   * @return FieldList
-   */  
-  public function Products() {
+	/**
+	 * Set how the products are ordered on ProductCategory pages
+	 * 
+	 * @see ProductCategory_Controller::Products()
+	 * @var String Suitable for inserting in ORDER BY clause
+	 */
+	// public static $products_ordered_by = "\"ProductCategory_Products\".\"ProductOrder\" DESC";
+	public static $products_ordered_by = "\"SiteTree\".\"ParentID\" ASC, \"SiteTree\".\"Sort\" ASC";
+	
+	/**
+	 * Include some CSS.
+	 * 
+	 * @see Page_Controller::init()
+	 */
+	function init() {
+		parent::init();
+		Requirements::css('swipestripe/css/Shop.css');
+	}
 
-  	$limit = self::$products_per_page;
-  	$orderBy = self::$products_ordered_by;
+	/**
+	 * Get Products that have this ProductCategory set or have this ProductCategory as a parent in site tree.
+	 * Supports pagination.
+	 * 
+	 * @see Page_Controller::Products()
+	 * @return FieldList
+	 */  
+	public function Products() {
 
-  	$cats = array($this->ID);
-  	foreach ($this->Children() as $child) {
-  		if ($child instanceof ProductCategory) {
-  			$cats[] = $child->ID;
-  		}
-  	}
-  	$in = "('" . implode("','", $cats) . "')";
+		$limit = self::$products_per_page;
+		$orderBy = self::$products_ordered_by;
 
-  	$products = Product::get()
-      ->where("\"ProductCategory_Products\".\"ProductCategoryID\" IN $in OR \"ParentID\" IN $in")
-      ->sort($orderBy)
-      ->leftJoin('ProductCategory_Products', "\"ProductCategory_Products\".\"ProductID\" = \"SiteTree\".\"ID\"");
+		$cats = array($this->ID);
+		foreach ($this->Children() as $child) {
+			if ($child instanceof ProductCategory) {
+				$cats[] = $child->ID;
+			}
+		}
+		$in = "('" . implode("','", $cats) . "')";
 
-    $this->extend('updateCategoryProducts', $products);
+		$products = Product::get()
+			->where("\"ProductCategory_Products\".\"ProductCategoryID\" IN $in OR \"ParentID\" IN $in")
+			->sort($orderBy)
+			->leftJoin('ProductCategory_Products', "\"ProductCategory_Products\".\"ProductID\" = \"SiteTree\".\"ID\"");
 
-  	$list = PaginatedList::create($products, $this->request)
-  		->setPageLength($limit);
+		$this->extend('updateCategoryProducts', $products);
 
-  	return $list;
-  }
+		$list = PaginatedList::create($products, $this->request)
+			->setPageLength($limit);
+
+		return $list;
+	}
 }
 
 class ProductCategory_Products extends DataObject {
 
-  public static $db = array(
-    'ProductOrder' => 'Int'
-  );
+	public static $db = array(
+		'ProductOrder' => 'Int'
+	);
 
-  public static $has_one = array(
-    'ProductCategory' => 'ProductCategory',
-    'Product' => 'Product'
-  );
+	public static $has_one = array(
+		'ProductCategory' => 'ProductCategory',
+		'Product' => 'Product'
+	);
 }
 
 class ProductCategory_Extension extends DataExtension {
 
 	/**
-   * Belongs many many relations for Product
-   * 
-   * @var Array
-   */
-  public static $belongs_many_many = array(    
-    'ProductCategories' => 'ProductCategory'
-  );
+	 * Belongs many many relations for Product
+	 * 
+	 * @var Array
+	 */
+	public static $belongs_many_many = array(    
+		'ProductCategories' => 'ProductCategory'
+	);
 
-  public static $searchable_fields = array(
-    'Category' => array(
-      'field' => 'TextField',
-      'filter' => 'ProductCategory_SearchFilter',
-      'title' => 'Category'
-    )
-  );
+	public static $searchable_fields = array(
+		'Category' => array(
+			'field' => 'TextField',
+			'filter' => 'ProductCategory_SearchFilter',
+			'title' => 'Category'
+		)
+	);
 
 	public static $casting = array(
-    'Category' => 'Varchar',
-  );
+		'Category' => 'Varchar',
+	);
 
-  public function onBeforeWrite() {
+	public function onBeforeWrite() {
 
-    //If the ParentID is set to a ProductCategory, select that category for this Product
-    $parent = $this->owner->getParent();
-    if ($parent && $parent instanceof ProductCategory) {
+		//If the ParentID is set to a ProductCategory, select that category for this Product
+		$parent = $this->owner->getParent();
+		if ($parent && $parent instanceof ProductCategory) {
 
-      $productCategories = $this->owner->ProductCategories();
-      if ($this->owner->isInDB() && !in_array($parent->ID, array_keys($productCategories->map()->toArray()))) {
-        $productCategories->add($parent);
-      }
-    }
-  }
+			$productCategories = $this->owner->ProductCategories();
+			if ($this->owner->isInDB() && !in_array($parent->ID, array_keys($productCategories->map()->toArray()))) {
+				$productCategories->add($parent);
+			}
+		}
+	}
 
-  public function updateCMSFields(FieldList $fields) {
+	public function updateCMSFields(FieldList $fields) {
 
-  	$categories = ProductCategory::get()->map('ID', 'ListboxCrumb')->toArray();
-    arsort($categories);
+		$categories = ProductCategory::get()->map('ID', 'ListboxCrumb')->toArray();
+		arsort($categories);
 
-    $fields->addFieldToTab(
-      'Root.Main', 
-      ListboxField::create('ProductCategories', 'Categories')
-        ->setMultiple(true)
-        ->setSource($categories)
-        ->setAttribute('data-placeholder', 'Add categories'), 
-      'Content'
-    );
-    return $fields;
+		$fields->addFieldToTab(
+			'Root.Main', 
+			ListboxField::create('ProductCategories', 'Categories')
+				->setMultiple(true)
+				->setSource($categories)
+				->setAttribute('data-placeholder', 'Add categories'), 
+			'Content'
+		);
+		return $fields;
 	}
 }
 
@@ -256,30 +237,30 @@ class ProductCategory_CMSExtension extends Extension {
  */
 class ProductCategory_SearchFilter extends SearchFilter {
 
-  /**
-   * Apply filter query SQL to a search query
-   * 
-   * @see SearchFilter::apply()
-   * @return SQLQuery
-   */
+	/**
+	 * Apply filter query SQL to a search query
+	 * 
+	 * @see SearchFilter::apply()
+	 * @return SQLQuery
+	 */
 	public function apply(DataQuery $query) {
 
-	  $this->model = $query->applyRelation($this->relation);
-	  $value = $this->getValue();
+		$this->model = $query->applyRelation($this->relation);
+		$value = $this->getValue();
 
-	  if ($value) {
+		if ($value) {
 
-	    $query->innerJoin(
-  			'ProductCategory_Products',
-  			"\"ProductCategory_Products\".\"ProductID\" = \"SiteTree\".\"ID\""
-  		);
-  		$query->innerJoin(
-  			'SiteTree_Live',
-  			"\"SiteTree_Live\".\"ID\" = \"ProductCategory_Products\".\"ProductCategoryID\""
-  		);
-  		$query->where("\"SiteTree_Live\".\"ID\" LIKE '%" . Convert::raw2sql($value) . "%'");
-	  }
-	  return $query;
+			$query->innerJoin(
+				'ProductCategory_Products',
+				"\"ProductCategory_Products\".\"ProductID\" = \"SiteTree\".\"ID\""
+			);
+			$query->innerJoin(
+				'SiteTree_Live',
+				"\"SiteTree_Live\".\"ID\" = \"ProductCategory_Products\".\"ProductCategoryID\""
+			);
+			$query->where("\"SiteTree_Live\".\"ID\" LIKE '%" . Convert::raw2sql($value) . "%'");
+		}
+		return $query;
 	}
 
 	/**
