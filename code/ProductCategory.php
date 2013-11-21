@@ -5,19 +5,19 @@
  */
 class ProductCategory extends Page {
 
-	public static $singular_name = 'Product Category';
-	public static $plural_name = 'Product Categories';
+	private static $singular_name = 'Product Category';
+	private static $plural_name = 'Product Categories';
 
 	/**
 	 * Many many relations for a ProductCategory
 	 * 
 	 * @var Array
 	 */
-	public static $many_many = array(
+	private static $many_many = array(
 		'Products' => 'Product'
 	);
-	
-	public static $many_many_extraFields = array(
+
+	private static $many_many_extraFields = array(
 		'Products' => array(
 			'ProductOrder' => 'Int'
 		)
@@ -28,7 +28,7 @@ class ProductCategory extends Page {
 	 * 
 	 * @var Array
 	 */
-	public static $summary_fields = array(
+	private static $summary_fields = array(
 		'Title' => 'Name',
 		'MenuTitle' => 'Menu Title'
 	);
@@ -152,11 +152,11 @@ class ProductCategory_Controller extends Page_Controller {
 
 class ProductCategory_Products extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 		'ProductOrder' => 'Int'
 	);
 
-	public static $has_one = array(
+	private static $has_one = array(
 		'ProductCategory' => 'ProductCategory',
 		'Product' => 'Product'
 	);
@@ -169,11 +169,11 @@ class ProductCategory_Extension extends DataExtension {
 	 * 
 	 * @var Array
 	 */
-	public static $belongs_many_many = array(    
+	private static $belongs_many_many = array(
 		'ProductCategories' => 'ProductCategory'
 	);
 
-	public static $searchable_fields = array(
+	private static $searchable_fields = array(
 		'Category' => array(
 			'field' => 'TextField',
 			'filter' => 'ProductCategory_SearchFilter',
@@ -181,7 +181,7 @@ class ProductCategory_Extension extends DataExtension {
 		)
 	);
 
-	public static $casting = array(
+	private static $casting = array(
 		'Category' => 'Varchar',
 	);
 
