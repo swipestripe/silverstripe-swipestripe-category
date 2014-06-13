@@ -175,10 +175,12 @@ class ProductCategory_Extension extends DataExtension {
 
 	private static $searchable_fields = array(
 		'Category' => array(
-			'field' => 'TextField',
-			'filter' => 'ProductCategory_SearchFilter',
-			'title' => 'Category'
-		)
+			       'ProductCategories.Title' => array(
+				'field' => 'TextField',
+				'filter' => 'ProductCategory_SearchFilter',
+				'title' => 'Category'
+			)
+	)
 	);
 
 	private static $casting = array(
